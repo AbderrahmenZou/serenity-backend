@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use App\Models\Adviser;
 
 class AuthController extends Controller
 {
@@ -22,15 +23,16 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $data['first_namre'] = $request->input('first_name');
+        $data['first_name'] = $request->input('first_name');
         $data['last_name'] = $request->input('last_name');
         $data['email'] = $request->input('email');
         $data['password'] = Hash::make($data['password']);
         $data['role'] = $request->input('role');
         $data['age'] = $request->input('age');
         $data['gender'] = $request->input('gender');
-        $data['username'] = $this->CreateName($data['email'], $data['role']);
+        $data['username'] = $request->input('username'); 
 
+        // $data['username'] = $this->CreateName($data['email'], $data['role']);
         $user = User::create($data);
         $token = $user->createToken(User::USER_TOKEN);
 
@@ -40,28 +42,28 @@ class AuthController extends Controller
         ], 'User registered successfully', 201);
     }
 
-    private function CreateName($email, $role)
-    {
+    // private function CreateName($email, $role)
+    // {
 
-        // Convert words to arrays of characters
-        $email = strstr($email, '@', true);
-        $constantChars = str_split($email);
-        $secondChars = str_split($role);
+    //     // Convert words to arrays of characters
+    //     $email = strstr($email, '@', true);
+    //     $constantChars = str_split($email);
+    //     $secondChars = str_split($role);
 
-        // Shuffle the letters of each word
-        shuffle($constantChars);
-        shuffle($secondChars);
+    //     // Shuffle the letters of each word
+    //     shuffle($constantChars);
+    //     shuffle($secondChars);
 
-        // Convert arrays back to strings
-        $mixedConstant = implode('', $constantChars);
-        $mixedSecond = implode('', $secondChars);
-        $username = $mixedConstant . $mixedSecond;
-        $username = str_split($username);
-        shuffle($username);
-        $username = implode('', $username);
-        // Return the combined mixed words
-        return $username;
-    }
+    //     // Convert arrays back to strings
+    //     $mixedConstant = implode('', $constantChars);
+    //     $mixedSecond = implode('', $secondChars);
+    //     $username = $mixedConstant . $mixedSecond;
+    //     $username = str_split($username);
+    //     shuffle($username);
+    //     $username = implode('', $username);
+    //     // Return the combined mixed words
+    //     return $username;
+    // }
 
 
     /**

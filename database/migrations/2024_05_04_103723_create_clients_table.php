@@ -18,11 +18,12 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('avatar')->nullable();
-            // $table->string('username')->unique();
+            $table->string('username')->unique();
             $table->float('points')->default(100);
             $table->string('email')->unique();
             $table->string('password');
-            $table->integer('age')->nullable();
+            $table->date('age')->nullable();
+            $table->integer('Phone_number')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->string('role')->default('cient');
             $table->timestamps();

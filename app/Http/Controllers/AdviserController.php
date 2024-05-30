@@ -28,6 +28,20 @@ class AdviserController extends Controller
         return $this->success($data);
     }
 
+    public function search(Request $request)
+    {
+        $searchTerm = $request->input('search');
+    
+        $advisers = Adviser::where('first_name', 'LIKE', "%{$searchTerm}%")
+                           ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
+                           ->get();
+        return response()->json([
+            'data' => $advisers,
+            'success' => true,
+            'message' => 'نجاح',
+        ]);
+    }
+    
     // public function store(Request $request)
     // {
     //     $data = new Adviser();

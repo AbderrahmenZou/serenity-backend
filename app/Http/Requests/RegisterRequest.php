@@ -29,6 +29,7 @@ class RegisterRequest extends FormRequest
             'age' => 'required|integer',
             'gender' => 'required|in:male,female',
             'role' => 'required|in:client,admin,adviser,reviewer',
+            'username' => 'required|string|max:255|unique:users',
         ];
     }
 }

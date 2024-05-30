@@ -1,11 +1,13 @@
 <?php
 
+// ملف: database/migrations/2024_05_04_103612_create_advisers_table.php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateAdvisersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +15,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('advisers', function (Blueprint $table) {
-            $table->string('id')->primary(); // will be the id of the adviser and username in the same time
+            $table->string('id')->primary();
             $table->foreignId('id_user')->constrained('users')->cascadeOnDelete();
             $table->string('first_name');
             $table->string('last_name');
@@ -25,13 +27,11 @@ return new class extends Migration
             $table->float('points')->default(100);
             $table->integer('age')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
-            $table->string('role');
             $table->float('rate')->default(0.0);
             $table->string('bio')->nullable();
             $table->string('role')->default('adviser');
             $table->timestamps();
         });
-
 
         DB::unprepared('
         CREATE TRIGGER copy_user_info_to_adviser
@@ -39,8 +39,8 @@ return new class extends Migration
         FOR EACH ROW
         BEGIN
         IF NEW.role = "adviser" THEN
-            INSERT INTO advisers (id, id_user, first_name, last_name, points, avatar, email, password, age, gender, role, created_at, updated_at)
-            VALUES (NEW.username, NEW.id, NEW.first_name, NEW.last_name, 100, NULL, NEW.email, NEW.password, NEW.age, NEW.gender, "adviser", NOW(), NOW());
+            INSERT INTO advisers (id, id_user, first_name, last_name, avatar, email, password, ID_card, points, age, gender, role, created_at, updated_at)
+            VALUES (NEW.username, NEW.id, NEW.first_name, NEW.last_name, NEW.avatar, NEW.email, NEW.password, NEW.ID_card, 100, NEW.age, NEW.gender, "adviser", NOW(), NOW());
         END IF;
         END
         ');
@@ -53,4 +53,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('advisers');
     }
-};
+}
+

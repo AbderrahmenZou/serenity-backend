@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdviserController;
 use App\Http\Controllers\AuthController;
@@ -32,7 +31,9 @@ Route::middleware('auth:sanctum')
         Route::apiResource('chat', ChatController::class)->only(['index', 'store', 'show']);
         Route::apiResource('chat_message', ChatMessageController::class)->only(['index', 'store']);
         Route::apiResource('user', UserController::class)->only(['index']);
+        Route::post('adviser/search', [UserController::class, 'search']);
         Route::apiResource('adviser', AdviserController::class)->only(['index', 'show']);
+        
         // Route::apiResource('admin', AdminController::class);
         // Route::apiResource('client', ClientController::class);
         // Route::apiResource('Reviewer', ReviewerController::class);

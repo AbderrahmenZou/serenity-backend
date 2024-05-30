@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->integer('age')->nullable();
+            $table->string('ID_card')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->enum('role', ['admin', 'client', 'adviser', 'reviewer'])->default('client');
             $table->timestamps();
