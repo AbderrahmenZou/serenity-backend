@@ -32,7 +32,7 @@ class AuthController extends Controller
         $data['gender'] = $request->input('gender');
         $data['username'] = $request->input('username'); 
 
-        // $data['username'] = $this->CreateName($data['email'], $data['role']);
+        
         $user = User::create($data);
         $token = $user->createToken(User::USER_TOKEN);
 

@@ -25,7 +25,9 @@ class CreateAdvisersTable extends Migration
             $table->string('specialty')->nullable();
             $table->string('ID_card')->nullable();
             $table->float('points')->default(100);
-            $table->integer('age')->nullable();
+            $table->date('age')->nullable();
+            $table->string('username')->unique()->nullable();
+            $table->integer('Phone_number')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->float('rate')->default(0.0);
             $table->string('bio')->nullable();

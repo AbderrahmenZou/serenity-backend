@@ -21,7 +21,9 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('email')->unique();
             $table->string('password');
-            $table->integer('age')->nullable();
+            $table->date('age')->nullable();
+            $table->string('username')->unique()->nullable();
+            $table->integer('Phone_number')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->string('role')->default('admin');
             $table->timestamps();
