@@ -32,6 +32,9 @@ class CreateAdvisersTable extends Migration
             $table->float('rate')->default(0.0);
             $table->string('bio')->nullable();
             $table->string('role')->default('adviser');
+            $table->string('specialities')->nullable();
+            $table->string('description')->nullable();
+            $table->string('downloading_a_file')->nullable();
             $table->timestamps();
         });
 

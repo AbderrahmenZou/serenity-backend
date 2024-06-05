@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('Phone_number')->nullable();
             $table->string('ID_card')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
-            $table->enum('role', ['admin', 'client', 'adviser', 'reviewer'])->default('client');
+            $table->enum('role',['admin', 'client', 'adviser', 'reviewer'])->default('client');
             $table->timestamps();
         });
 

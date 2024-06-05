@@ -10,13 +10,14 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\BecomeAdviserController;
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
 Route::prefix('auth')
     ->as('auth.')
     ->group(function () {
         Route::post('login', [AuthController::class, 'login'])->name('login');
+       
         Route::post('register', [AuthController::class, 'register'])->name('register');
         Route::post('login_with_token', [AuthController::class, 'loginWithToken'])
             ->middleware('auth:sanctum')
@@ -32,6 +33,7 @@ Route::middleware('auth:sanctum')
         Route::apiResource('chat_message', ChatMessageController::class)->only(['index', 'store']);
         Route::apiResource('user', UserController::class)->only(['index']);
         Route::post('adviser/search', [UserController::class, 'search']);
+        Route::post('become-adviser', [BecomeAdviserController::class, 'store']);
         Route::apiResource('adviser', AdviserController::class)->only(['index', 'show']);
         
         // Route::apiResource('admin', AdminController::class);

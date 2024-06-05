@@ -16,7 +16,7 @@ class AdviserController extends Controller
     {
         $data = Adviser::all();
         if ($data->isNotEmpty()) {
-            echo $data->first()->id;
+            
         }
         return $this->success($data);
     }
