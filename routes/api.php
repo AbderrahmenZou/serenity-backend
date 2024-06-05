@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BecomeAdviserController;
+use App\Http\Controllers\RapportController;
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
 Route::prefix('auth')
@@ -34,8 +35,11 @@ Route::middleware('auth:sanctum')
         Route::apiResource('user', UserController::class)->only(['index']);
         Route::post('adviser/search', [UserController::class, 'search']);
         Route::post('become-adviser', [BecomeAdviserController::class, 'store']);
+        Route::get('become-adviser', [BecomeAdviserController::class, 'index']);
         Route::apiResource('adviser', AdviserController::class)->only(['index', 'show']);
-        
+        Route::post('rapports', [RapportController::class, 'store'])->name('rapports.store');
+        Route::get('rapports', [RapportController::class, 'index'])->name('rapports.index');
+
         // Route::apiResource('admin', AdminController::class);
         // Route::apiResource('client', ClientController::class);
         // Route::apiResource('Reviewer', ReviewerController::class);
