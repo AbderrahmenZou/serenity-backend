@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->string('name')->nullable();
             $table->boolean('is_private')->default(true);
+            $table->dateTime('appointed_date')->nullable();
             $table->timestamps();
         });
     }

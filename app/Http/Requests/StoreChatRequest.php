@@ -26,6 +26,7 @@ class StoreChatRequest extends FormRequest
 
         return [
             'user_id' => "required|exists:{$userModel},id",
+            'appointed_date' => 'required|date_format:Y-m-d H:i:s',
             'name' => 'nullable',
             'is_private' => 'nullable|boolean',
         ];

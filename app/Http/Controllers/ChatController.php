@@ -101,7 +101,8 @@ class ChatController extends Controller
         $otherUserId = (int)$data['user_id'];
         unset($data['user_id']);
         $data['created_by'] = auth()->user()->id;
-
+        $data['appointed_date'] = $data['appointed_date'] ?? null;
+        
         return [
             'otherUserId' => $otherUserId,
             'userId' => auth()->user()->id,
