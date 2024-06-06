@@ -21,24 +21,20 @@ class ChatMessageController extends Controller
      * @return JsonResponse
      */
     public function index(GetMessageRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $chatId = $data['chat_id'];
-        $currentPage = $data['page'];
-        $pageSize = $data['page_size'] ?? 15;
+        {
+            $data = $request->validated();
+            $chatId = $data['chat_id'];
 
-        $messages = ChatMessage::where('chat_id', $chatId)
-            ->with('user')
-            ->latest('created_at')
-            ->simplePaginate(
-                $pageSize,
-                ['*'],
-                'page',
-                $currentPage
-            );
+            $messages = ChatMessage::where('chat_id', $chatId)
+                ->with('user')  // Eager load the related user
+                ->latest('created_at')  // Order by the latest created_at
+                ->get();
 
-        return $this->success($messages->getCollection());
-    }
+            return response()->json([
+                'success' => true,
+                'data' => $messages,
+            ]);
+        }
 
 
 
