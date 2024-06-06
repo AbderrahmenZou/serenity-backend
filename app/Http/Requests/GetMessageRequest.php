@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Chat;
-use App\Models\ChatMessage;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GetMessageRequest extends FormRequest
@@ -23,11 +21,9 @@ class GetMessageRequest extends FormRequest
      */
     public function rules(): array
     {
-        $chatModel = get_class(new Chat());
         return [
-            'chat_id' => "required|exists:{$chatModel},id",
-            'page' => 'required|numeric',
-            'page_size' => "nullable|numeric",
+            'chat_id' => 'required|exists:chats,id',
         ];
     }
 }
+
