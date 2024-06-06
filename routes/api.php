@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BecomeAdviserController;
 use App\Http\Controllers\RapportController;
+
+
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
 Route::prefix('auth')
@@ -40,6 +42,16 @@ Route::middleware('auth:sanctum')
         Route::post('rapports', [RapportController::class, 'store'])->name('rapports.store');
         Route::get('rapports', [RapportController::class, 'index'])->name('rapports.index');
 
+        
+        // Route::get('/reviewer/users', [AdminController::class, 'index'])->middleware('auth', 'admin');
+        // Route::post('/reviewer/users/{user}/approve', [AdminController::class, 'approve'])->middleware('auth', 'admin');
+        
+        Route::prefix('reviewer')
+            ->middleware(['auth:sanctum', 'reviewer'])
+            ->group(function () {
+                Route::get('advisers', [ReviewerController::class, 'index']);
+                Route::post('advisers/{user}/approve', [ReviewerController::class, 'approve']);
+            });
         // Route::apiResource('admin', AdminController::class);
         // Route::apiResource('client', ClientController::class);
         // Route::apiResource('Reviewer', ReviewerController::class);

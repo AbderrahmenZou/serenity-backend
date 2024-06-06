@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use App\Models\Adviser;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
-
     /**
      * Register a new user
      *
@@ -22,53 +23,56 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $data['first_name'] = $request->input('first_name');
-        $data['last_name'] = $request->input('last_name');
-        $data['email'] = $request->input('email');
-        $data['password'] = Hash::make($data['password']);
-        $data['role'] = $request->input('role');
-        $data['age'] = $request->input('age');
-        $data['gender'] = $request->input('gender');
-        $data['username'] = $request->input('username'); 
+        $validatedData = $request->validated();
+        $validatedData['password'] = Hash::make($validatedData['password']);
+        $validatedData['approved'] = $validatedData['role'] !== 'adviser'; // Set approved to false for advisers
 
-        
-        $user = User::create($data);
+        // Handle adviser-specific fields
+        if ($validatedData['role'] === 'adviser') {
+            if (!$request->hasFile('downloading_a_file')) {
+                return response()->json(['error' => 'File is required for advisers'], 422);
+            }
+
+            // Determine the original file name and store the file
+            $documentName = $request->file('downloading_a_file')->getClientOriginalName();
+            try {
+                $path = $request->file('downloading_a_file')->storeAs('become_adviser', $documentName, 'public');
+                $validatedData['downloading_a_file'] = $path;
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'An error occurred while uploading the file'], 500);
+            }
+
+            // Check if the email already exists in the advisers table
+            if (DB::table('advisers')->where('email', $validatedData['email'])->exists()) {
+                return response()->json(['error' => 'Email already exists in advisers table'], 422);
+            }
+
+            $validatedData['specialities'] = $request->input('specialities');
+            $validatedData['description'] = $request->input('description');
+        }
+
+        // Create user
+        $user = User::create($validatedData);
         $token = $user->createToken(User::USER_TOKEN);
 
-        return $this->success([
-            'user' => $user,
-            'token' => $token->plainTextToken,
-        ], 'User registered successfully', 201);
+        
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => $user,
+                'token' => $token->plainTextToken,
+            ],
+            'message' => 'User registered successfully',
+        ], 201);
     }
 
-    // private function CreateName($email, $role)
-    // {
-
-    //     // Convert words to arrays of characters
-    //     $email = strstr($email, '@', true);
-    //     $constantChars = str_split($email);
-    //     $secondChars = str_split($role);
-
-    //     // Shuffle the letters of each word
-    //     shuffle($constantChars);
-    //     shuffle($secondChars);
-
-    //     // Convert arrays back to strings
-    //     $mixedConstant = implode('', $constantChars);
-    //     $mixedSecond = implode('', $secondChars);
-    //     $username = $mixedConstant . $mixedSecond;
-    //     $username = str_split($username);
-    //     shuffle($username);
-    //     $username = implode('', $username);
-    //     // Return the combined mixed words
-    //     return $username;
-    // }
 
 
+
+    
     /**
      * Login a user
-     *
      *
      * @param LoginRequest $request
      * @return JsonResponse
@@ -78,19 +82,26 @@ class AuthController extends Controller
         $isValid = $this->isValidCredential($request);
 
         if (!$isValid['success']) {
-            return $this->error($isValid['message'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json(['success' => false, 'message' => $isValid['message']], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $user = $isValid['user'];
+
+        if (!$user->approved) {
+            return response()->json(['success' => false, 'message' => 'Your account is not approved yet.'], Response::HTTP_FORBIDDEN);
         }
         
-        $user = $isValid['user'];
         $token = $user->createToken(User::USER_TOKEN);
 
-        return $this->success([
-            'user' => $user,
-            'token' => $token->plainTextToken,
-        ], 'User logged in successfully');
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => $user,
+                'token' => $token->plainTextToken,
+            ],
+            'message' => 'User logged in successfully',
+        ]);
     }
-
-
 
     /**
      * Check if the user credentials are valid
@@ -111,7 +122,6 @@ class AuthController extends Controller
             ];
         }
 
-
         if (Hash::check($data['password'], $user->password)) {
             return [
                 'success' => true,
@@ -119,24 +129,38 @@ class AuthController extends Controller
             ];
         }
 
-
         return [
             'success' => false,
-            'message' => 'password is incorrect',
+            'message' => 'Password is incorrect',
         ];
     }
 
-
     /**
-     * Logout a user
+     * Login with token
      *
      * @return JsonResponse
      */
     public function loginWithToken(): JsonResponse
     {
-        return $this->success(auth()->user(), 'User logged in successfully');
-    }
+        $user = Auth::user();
 
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not authenticated.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        if (!$user->approved) {
+            return response()->json(['success' => false, 'message' => 'Your account is not approved yet.'], Response::HTTP_FORBIDDEN);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => $user,
+                'token' => null, // No new token is created here
+            ],
+            'message' => 'User logged in successfully',
+        ], 200);
+    }
 
     /**
      * Logout a user
@@ -147,6 +171,6 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
-        return $this->success(null, 'User logged out successfully');
+        return response()->json(['success' => true, 'message' => 'User logged out successfully']);
     }
 }

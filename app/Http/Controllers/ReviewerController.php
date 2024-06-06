@@ -2,10 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewerController extends Controller
 {
-    //
+    public function index()
+    {
+        $advisers = User::where('role', 'adviser')->where('approved', false)->get();
+        return response()->json($advisers);
+    }
+
+    public function approve(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        if ($user->role !== 'adviser') {
+            return response()->json(['message' => 'Only advisers can be approved'], 400);
+        }
+
+        if (!Auth::check() || Auth::user()->role !== 'reviewer') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if ($user->approved) {
+            return response()->json(['message' => 'Adviser is already approved'], 400);
+        }
+
+        $user->approved = true;
+        $user->save();
+
+        return response()->json(['message' => 'Adviser approved successfully!']);
+    }
 }

@@ -1,7 +1,4 @@
 <?php
-
-// ملف: database/migrations/2024_05_04_103612_create_advisers_table.php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +12,7 @@ class CreateAdvisersTable extends Migration
     public function up(): void
     {
         Schema::create('advisers', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->id();
             $table->foreignId('id_user')->constrained('users')->cascadeOnDelete();
             $table->string('first_name');
             $table->string('last_name');
@@ -43,11 +40,11 @@ class CreateAdvisersTable extends Migration
         AFTER INSERT ON users
         FOR EACH ROW
         BEGIN
-        IF NEW.role = "adviser" THEN
-            INSERT INTO advisers (id, id_user, first_name, last_name, avatar, email, password, ID_card, points, age, gender, role, created_at, updated_at)
-            VALUES (NEW.username, NEW.id, NEW.first_name, NEW.last_name, NEW.avatar, NEW.email, NEW.password, NEW.ID_card, 100, NEW.age, NEW.gender, "adviser", NOW(), NOW());
-        END IF;
-        END
+            IF NEW.role = "adviser" THEN
+                INSERT INTO advisers (id_user, first_name, last_name, avatar, email, password, ID_card, points, age, gender, role, specialities, description, downloading_a_file, created_at, updated_at)
+                VALUES (NEW.id, NEW.first_name, NEW.last_name, NEW.avatar, NEW.email, NEW.password, NEW.ID_card, 100, NEW.age, NEW.gender, NEW.role, NEW.specialities, NEW.description, NEW.downloading_a_file, NOW(), NOW());
+            END IF;
+        END;
         ');
     }
 
@@ -59,4 +56,3 @@ class CreateAdvisersTable extends Migration
         Schema::dropIfExists('advisers');
     }
 }
-

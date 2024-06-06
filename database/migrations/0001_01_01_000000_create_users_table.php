@@ -25,6 +25,10 @@ return new class extends Migration
             $table->string('ID_card')->nullable();
             $table->enum('gender', ['male', 'female'])->nullable();
             $table->enum('role',['admin', 'client', 'adviser', 'reviewer'])->default('client');
+            $table->boolean('approved')->default(false); // Add this line
+            $table->string('specialities')->nullable();
+            $table->string('description')->nullable();
+            $table->string('downloading_a_file')->nullable();
             $table->timestamps();
         });
 
