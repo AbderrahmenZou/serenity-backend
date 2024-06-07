@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('specialities')->nullable();
             $table->string('description')->nullable();
             $table->string('downloading_a_file')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
 
