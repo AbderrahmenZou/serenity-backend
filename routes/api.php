@@ -43,14 +43,14 @@ Route::middleware('auth:sanctum')
         Route::get('rapports', [RapportController::class, 'index'])->name('rapports.index');
 
         
-        // Route::get('/reviewer/users', [AdminController::class, 'index'])->middleware('auth', 'admin');
-        // Route::post('/reviewer/users/{user}/approve', [AdminController::class, 'approve'])->middleware('auth', 'admin');
         
         Route::prefix('reviewer')
             ->middleware(['auth:sanctum', 'reviewer'])
             ->group(function () {
                 Route::get('advisers', [ReviewerController::class, 'index']);
+                Route::get('advisers/{id}', [ReviewerController::class, 'show']); 
                 Route::post('advisers/{user}/approve', [ReviewerController::class, 'approve']);
+                Route::delete('advisers/{user}', [ReviewerController::class, 'delete']);
             });
         // Route::apiResource('admin', AdminController::class);
         // Route::apiResource('client', ClientController::class);
