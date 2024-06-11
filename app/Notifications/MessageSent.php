@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Models\ChatMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -29,13 +28,12 @@ class MessageSent extends Notification
      *
      * @return array<int, string>
      */
-    public function via(): array
+    public function via($notifiable): array
     {
         return [OneSignalChannel::class];
     }
 
-
-    public function toOneSignal()
+    public function toOneSignal($notifiable)
     {
         $messageData = $this->data['messageData'];
 
