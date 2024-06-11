@@ -16,7 +16,8 @@ class ChatParticipant extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
+    } 
+    
     // public function chat(): BelongsTo
     // {
     //     return $this->belongsTo(Chat::class, 'chat_id');

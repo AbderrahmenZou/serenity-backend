@@ -32,17 +32,14 @@ Route::prefix('auth')
 
 Route::middleware('auth:sanctum')
     ->group(function () {
-        Route::apiResource('chat', ChatController::class)->only(['index', 'store', 'show']);
+        Route::apiResource('chat', ChatController::class)->only(['index', 'store', 'show', 'destroy']);
         Route::apiResource('chat_message', ChatMessageController::class)->only(['index', 'store']);
         Route::apiResource('user', UserController::class)->only(['index']);
         Route::post('adviser/search', [UserController::class, 'search']);
-        Route::post('become-adviser', [BecomeAdviserController::class, 'store']);
-        Route::get('become-adviser', [BecomeAdviserController::class, 'index']);
         Route::apiResource('adviser', AdviserController::class)->only(['index', 'show']);
         Route::post('rapports', [RapportController::class, 'store'])->name('rapports.store');
         Route::get('rapports', [RapportController::class, 'index'])->name('rapports.index');
 
-        
         
         Route::prefix('reviewer')
             ->middleware(['auth:sanctum', 'reviewer'])

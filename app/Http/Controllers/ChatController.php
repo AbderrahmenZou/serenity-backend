@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GetChatRequest;
+use App\Http\Requests\DeleteChatRequest;
 use App\Http\Requests\StoreChatRequest;
 use App\Models\Chat;
 use Illuminate\Http\JsonResponse;
@@ -122,4 +123,25 @@ class ChatController extends Controller
         $chat->load('lastMessage.user', 'participants.user');
         return $this->success($chat);
     }
+
+
+/**
+ * Deletes a single chat
+ *
+ * @param int $chatId
+ * @return JsonResponse
+ */
+public function destroy($chatId)
+{
+    try {
+        $chat = Chat::findOrFail($chatId); // Ensures the chat exists
+        $chat->delete(); // Perform the deletion
+        return response()->json(['message' => 'Chat deleted successfully'], 204); // Return success response
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        return response()->json(['message' => 'Chat not found'], 404); // Return not found response
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Failed to delete chat', 'error' => $e->getMessage()], 500); // Return error response
+    }
+}
+
 }
