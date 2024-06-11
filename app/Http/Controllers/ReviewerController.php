@@ -74,5 +74,5 @@ class ReviewerController extends Controller
 
         
         return response()->json(['message' => 'Adviser deleted successfully']);
-    }
+    }      
 }

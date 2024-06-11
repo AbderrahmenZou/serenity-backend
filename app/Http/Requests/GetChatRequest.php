@@ -23,6 +23,7 @@ class GetChatRequest extends FormRequest
     {
         return [
             'is_private' => 'nullable|boolean',
+            'is_reported' => 'nullable|boolean'
         ];
     }
 }

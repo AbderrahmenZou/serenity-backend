@@ -144,4 +144,54 @@ public function destroy($chatId)
     }
 }
 
+    /**
+     * Reports a chat as inappropriate or spam.
+     *
+     * @param int $chatId
+     * @return JsonResponse
+     */
+    public function report($chatId)
+    {
+        try {
+            // Log the attempt to report the chat
+            \Log::info("Reporting chat with ID: {$chatId}");
+
+            $chat = Chat::findOrFail($chatId); // Ensures the chat exists
+
+            // Optional: Check if the authenticated user has the right to report the chat
+            if (!auth()->user()->canReport($chat)) {
+                return response()->json(['message' => 'Unauthorized to report this chat'], 403);
+            }
+
+            $chat->is_reported = true; // Set the chat as reported
+            $chat->save(); // Save the updated chat
+
+            return response()->json(['message' => 'Chat reported successfully'], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            \Log::error("Failed to find chat with ID: {$chatId}"); // Log the failure to find the chat
+            return response()->json(['message' => 'Chat not found'], 404);
+        } catch (\Exception $e) {
+            \Log::error("Error reporting chat with ID: {$chatId}: {$e->getMessage()}"); // Log other exceptions
+            return response()->json(['message' => 'Failed to report chat', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Retrieves all reported chats.
+     * Only accessible by reviewers.
+     *
+     * @return JsonResponse
+     */
+    public function getReportedChats(): JsonResponse
+    {
+        $user = auth()->user();
+
+        // التحقق مما إذا كان المستخدم هو مراجع فقط
+        if (!$user->isReviewer()) {
+            return response()->json(['message' => 'Unauthorized to access reported chats'], 403);
+        }
+
+        $reportedChats = Chat::where('is_reported', true)->with('lastMessage.user', 'participants.user')->get();
+        return response()->json($reportedChats);
+    }
 }

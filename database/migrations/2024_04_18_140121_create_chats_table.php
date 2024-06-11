@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->boolean('is_private')->default(true);
             $table->dateTime('appointed_date')->nullable();
+            $table->boolean('is_reported')->default(false);
             $table->timestamps();
         });
     }

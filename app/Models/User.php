@@ -2,12 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
-use App\Notifications\MessageSent;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -18,11 +14,54 @@ class User extends Authenticatable
     protected $table = 'users';
     protected $guarded = ['id'];
 
-
     protected $hidden = [
         'password',
         // 'remember_token',
     ];
+
+    /**
+     * Determine if this user can report the specified chat.
+     *
+     * @param \App\Models\Chat $chat
+     * @return bool
+     */
+    public function canReport(Chat $chat)
+    {
+        // Example: Check if the user is a participant of the chat
+        return $chat->participants()->where('user_id', $this->id)->exists();
+    }
+
+    /**
+     * Check if the user is an adviser.
+     *
+     * @return bool
+     */
+    public function isAdviser()
+    {
+        // Assuming there is a one-to-one relationship
+        return $this->Adviser()->exists();
+    }
+
+    /**
+     * Check if the user is a reviewer.
+     *
+     * @return bool
+     */
+    public function isReviewer()
+    {
+        // Assuming there is a one-to-one relationship
+        return $this->Reviewer()->exists();
+    }
+
+    /**
+     * Check if the user is either an adviser or a reviewer.
+     *
+     * @return bool
+     */
+    public function isAdviserOrReviewer()
+    {
+        return $this->isAdviser() || $this->isReviewer();
+    }
 
     const USER_TOKEN = "userToken";
 
